@@ -45,9 +45,6 @@
  * LED GPIO pins objects
  */
 Gpio_t Led1;
-Gpio_t Led2;
-Gpio_t Led3;
-Gpio_t Led4;
 
 /*
  * MCU objects
@@ -83,11 +80,6 @@ static TimerEvent_t CalibrateSystemWakeupTimeTimer;
  * Flag to indicate if the MCU is Initialized
  */
 static bool McuInitialized = false;
-
-/*!
- * Flag used to indicate if board is powered from the USB
- */
-static bool UsbIsConnected = false;
 
 /*!
  * UART2 FIFO buffers size

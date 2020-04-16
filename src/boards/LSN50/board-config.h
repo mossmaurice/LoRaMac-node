@@ -46,50 +46,42 @@ extern "C"
 /*!
  * Board MCU pins definitions
  */
-#define RADIO_RESET                                 PC_0
+#define RADIO_RESET                                 PB_0
 
 #define RADIO_MOSI                                  PA_7
 #define RADIO_MISO                                  PA_6
-#define RADIO_SCLK                                  PB_3
+#define RADIO_SCLK                                  PA_5
 
 #define RADIO_NSS                                   PA_15
 
-#define RADIO_DIO_0                                 PB_4
-#define RADIO_DIO_1                                 PB_1
-#define RADIO_DIO_2                                 PB_0
-#define RADIO_DIO_3                                 PC_13
-#define RADIO_DIO_4                                 PA_5
-#define RADIO_DIO_5                                 PA_4
+#define RADIO_DIO_0                                 PC_13
+#define RADIO_DIO_1                                 PB_10
+#define RADIO_DIO_2                                 PB_11
+#define RADIO_DIO_3                                 PB_8
+#define RADIO_DIO_4                                 PB_9
+#define RADIO_DIO_5                                 PB_1
 
-#define RADIO_TCXO_POWER                            PA_12
+#define RADIO_TCXO_POWER                            PA_12 //?
 
-#define RADIO_ANT_SWITCH_RX                         PA_1
-#define RADIO_ANT_SWITCH_TX_BOOST                   PC_1
-#define RADIO_ANT_SWITCH_TX_RFO                     PC_2
+#define RADIO_ANT_SWITCH_RX                         PA_1 //?
+#define RADIO_ANT_SWITCH_TX_BOOST                   PC_1 //?
+#define RADIO_ANT_SWITCH_TX_RFO                     PC_2 //?
 
-#define LED_1                                       PB_5
-#define LED_2                                       PA_5
-#define LED_3                                       PB_6
-#define LED_4                                       PB_7
+#define LED_1                                       PB_8
 
 #define LED_GREEN                                   LED_1
-#define LED_RED1                                    LED_2
-#define LED_BLUE                                    LED_3
-#define LED_RED2                                    LED_4
 
-#define BTN_1                                       PB_2
-
-#define OSC_LSE_IN                                  PC_14
-#define OSC_LSE_OUT                                 PC_15
-
-#define OSC_HSE_IN                                  PH_0
-#define OSC_HSE_OUT                                 PH_1
+/// @todo Not needed for LSN50?
+//#define OSC_LSE_IN                                  PC_14
+//#define OSC_LSE_OUT                                 PC_15
+//#define OSC_HSE_IN                                  PH_0
+//#define OSC_HSE_OUT                                 PH_1
 
 #define SWCLK                                       PA_14
 #define SWDAT                                       PA_13
 
-#define I2C_SCL                                     PB_8
-#define I2C_SDA                                     PB_9
+#define I2C_SCL                                     PB_6
+#define I2C_SDA                                     PB_7
 
 #define UART_TX                                     PA_2
 #define UART_RX                                     PA_3
