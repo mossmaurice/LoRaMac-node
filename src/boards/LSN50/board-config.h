@@ -40,8 +40,9 @@ extern "C"
 
 /*!
  * Defines the time required for the TCXO to wakeup [ms].
+ * No TCXO on this board
  */
-#define BOARD_TCXO_WAKEUP_TIME                      5
+#define BOARD_TCXO_WAKEUP_TIME                      0
 
 /*!
  * Board MCU pins definitions
@@ -61,15 +62,9 @@ extern "C"
 #define RADIO_DIO_4                                 PB_9
 #define RADIO_DIO_5                                 PB_1
 
-#define RADIO_TCXO_POWER                            PA_12 //?
+#define RADIO_ANT_SWITCH                            PA_8
 
-#define RADIO_ANT_SWITCH_RX                         PA_1 //?
-#define RADIO_ANT_SWITCH_TX_BOOST                   PC_1 //?
-#define RADIO_ANT_SWITCH_TX_RFO                     PC_2 //?
-
-#define LED_1                                       PB_8
-
-#define LED_GREEN                                   LED_1
+#define PWR_OUT_PIN27_5V                            PB_5
 
 /// @todo Not needed for LSN50?
 //#define OSC_LSE_IN                                  PC_14
@@ -87,8 +82,8 @@ extern "C"
 #define UART_RX                                     PA_3
 
 // Debug pins definition.
-#define RADIO_DBG_PIN_TX                            PB_13
-#define RADIO_DBG_PIN_RX                            PB_14
+//#define RADIO_DBG_PIN_TX                            PB_13
+//#define RADIO_DBG_PIN_RX                            PB_14
 
 #ifdef __cplusplus
 }

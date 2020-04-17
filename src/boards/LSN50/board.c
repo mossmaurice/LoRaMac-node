@@ -127,8 +127,8 @@ void BoardInitMcu( void )
         HAL_Init( );
 
         // LEDs
-        // LSN50: LED1 connected with PA8, correct?
-        GpioInit( &Led1, LED_1, PIN_OUTPUT, PIN_PUSH_PULL, PIN_NO_PULL, 1 );
+        // LSN50: LED1 connected with PA8 and antenna
+        // GpioInit( &Led1, LED_1, PIN_OUTPUT, PIN_PUSH_PULL, PIN_NO_PULL, 1 );
 
         SystemClockConfig( );
 
@@ -141,7 +141,7 @@ void BoardInitMcu( void )
 
         RtcInit( );
 
-        GpioWrite( &Led1, 0 );
+        //GpioWrite( &Led1, 0 );
 
         BoardUnusedIoInit( );
         // Disables OFF mode - Enables lowest power mode (STOP)
@@ -159,7 +159,6 @@ void BoardInitMcu( void )
     {
         McuInitialized = true;
         SX1276IoDbgInit( );
-        SX1276IoTcxoInit( );
         CalibrateSystemWakeupTime( );
     }
 }

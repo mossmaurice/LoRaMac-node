@@ -75,16 +75,9 @@ const struct Radio_s Radio =
 };
 
 /*!
- * TCXO power control pin
- */
-Gpio_t TcxoPower;
-
-/*!
  * Antenna switch GPIO pins objects
  */
-Gpio_t AntSwitchRx;
-Gpio_t AntSwitchTxBoost;
-Gpio_t AntSwitchTxRfo;
+Gpio_t AntSwitch;
 
 /*!
  * Debug GPIO pins objects
@@ -138,25 +131,12 @@ void SX1276IoDbgInit( void )
 
 void SX1276IoTcxoInit( void )
 {
-    GpioInit( &TcxoPower, RADIO_TCXO_POWER, PIN_OUTPUT, PIN_PUSH_PULL, PIN_NO_PULL, 0 );
+    // No TCXO component available on this board design.
 }
 
 void SX1276SetBoardTcxo( uint8_t state )
 {
-    if( state == true )
-    {
-        if( GpioRead( &TcxoPower ) == 0 )
-        { // TCXO OFF power it up.
-            // Power ON the TCXO
-            GpioWrite( &TcxoPower, 1 );
-            DelayMs( BOARD_TCXO_WAKEUP_TIME );
-        }
-    }
-    else
-    {
-        // Power OFF the TCXO
-        GpioWrite( &TcxoPower, 0 );
-    }
+    // No TCXO component available on this board design.
 }
 
 uint32_t SX1276GetBoardTcxoWakeupTime( void )
@@ -281,38 +261,26 @@ void SX1276SetAntSwLowPower( bool status )
 
 void SX1276AntSwInit( void )
 {
-    GpioInit( &AntSwitchRx, RADIO_ANT_SWITCH_RX, PIN_OUTPUT, PIN_PUSH_PULL, PIN_NO_PULL, 0 );
-    GpioInit( &AntSwitchTxBoost, RADIO_ANT_SWITCH_TX_BOOST, PIN_OUTPUT, PIN_PUSH_PULL, PIN_NO_PULL, 0 );
-    GpioInit( &AntSwitchTxRfo, RADIO_ANT_SWITCH_TX_RFO, PIN_OUTPUT, PIN_PUSH_PULL, PIN_NO_PULL, 0 );
+    GpioInit( &AntSwitch, RADIO_ANT_SWITCH, PIN_OUTPUT, PIN_PUSH_PULL, PIN_PULL_UP, 0 );
 }
 
 void SX1276AntSwDeInit( void )
 {
-    GpioInit( &AntSwitchRx, RADIO_ANT_SWITCH_RX, PIN_ANALOGIC, PIN_OPEN_DRAIN, PIN_NO_PULL, 0 );
-    GpioInit( &AntSwitchTxBoost, RADIO_ANT_SWITCH_TX_BOOST, PIN_ANALOGIC, PIN_OPEN_DRAIN, PIN_NO_PULL, 0 );
-    GpioInit( &AntSwitchTxRfo, RADIO_ANT_SWITCH_TX_RFO, PIN_ANALOGIC, PIN_OPEN_DRAIN, PIN_NO_PULL, 0 );
+    GpioInit( &AntSwitch, RADIO_ANT_SWITCH, PIN_OUTPUT, PIN_PUSH_PULL, PIN_NO_PULL, 0 );
 }
 
 void SX1276SetAntSw( uint8_t opMode )
 {
-    uint8_t paConfig =  SX1276Read( REG_PACONFIG );
     switch( opMode )
     {
     case RFLR_OPMODE_TRANSMITTER:
-        if( ( paConfig & RF_PACONFIG_PASELECT_PABOOST ) == RF_PACONFIG_PASELECT_PABOOST )
-        {
-            GpioWrite( &AntSwitchTxBoost, 1 );
-        }
-        else
-        {
-            GpioWrite( &AntSwitchTxRfo, 1 );
-        }
+        GpioWrite( &AntSwitch, 1 );
         break;
     case RFLR_OPMODE_RECEIVER:
     case RFLR_OPMODE_RECEIVER_SINGLE:
     case RFLR_OPMODE_CAD:
     default:
-        GpioWrite( &AntSwitchRx, 1 );
+        GpioWrite( &AntSwitch, 0 );
         break;
     }
 }
