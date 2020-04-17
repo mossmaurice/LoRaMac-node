@@ -160,6 +160,9 @@ void BoardInitMcu( void )
         McuInitialized = true;
         SX1276IoDbgInit( );
         CalibrateSystemWakeupTime( );
+        /// @todo
+        // AdcMcuConfig();
+        // Enable PWR_OUT_PIN27_5V
     }
 }
 
@@ -206,6 +209,7 @@ uint32_t BoardGetBatteryVoltage( void )
 
 uint8_t BoardGetBatteryLevel( void )
 {
+    /// @todo implement this with AdcMcuReadChannel() and ADC_CHANNEL_VREFINT
     return 0;
 }
 
