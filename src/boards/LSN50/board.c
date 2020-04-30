@@ -41,10 +41,7 @@
 #define         ID2                                 ( 0x1FF80054 )
 #define         ID3                                 ( 0x1FF80064 )
 
-/*!
- * LED GPIO pins objects
- */
-Gpio_t Led1;
+// LED1 connected with PA8 and antenna, blinks on transmit
 
 /*
  * MCU objects
@@ -126,22 +123,15 @@ void BoardInitMcu( void )
     {
         HAL_Init( );
 
-        // LEDs
-        // LSN50: LED1 connected with PA8 and antenna
-        // GpioInit( &Led1, LED_1, PIN_OUTPUT, PIN_PUSH_PULL, PIN_NO_PULL, 1 );
-
         SystemClockConfig( );
 
-        // Will USART2 work? PA2 and PA3
         FifoInit( &Uart2.FifoTx, Uart2TxBuffer, UART2_FIFO_TX_SIZE );
         FifoInit( &Uart2.FifoRx, Uart2RxBuffer, UART2_FIFO_RX_SIZE );
         // Configure your terminal for 8 Bits data (7 data bit + 1 parity bit), no parity and no flow ctrl
         UartInit( &Uart2, UART_2, UART_TX, UART_RX );
-        UartConfig( &Uart2, RX_TX, 921600, UART_8_BIT, UART_1_STOP_BIT, NO_PARITY, NO_FLOW_CTRL );
+        UartConfig( &Uart2, RX_TX, 38400, UART_8_BIT, UART_1_STOP_BIT, NO_PARITY, NO_FLOW_CTRL );
 
         RtcInit( );
-
-        //GpioWrite( &Led1, 0 );
 
         BoardUnusedIoInit( );
         // Disables OFF mode - Enables lowest power mode (STOP)
