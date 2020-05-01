@@ -66,12 +66,6 @@ extern "C"
 
 #define PWR_OUT_PIN27_5V                            PB_5
 
-/// @todo Not needed for LSN50?
-//#define OSC_LSE_IN                                  PC_14
-//#define OSC_LSE_OUT                                 PC_15
-//#define OSC_HSE_IN                                  PH_0
-//#define OSC_HSE_OUT                                 PH_1
-
 #define SWCLK                                       PA_14
 #define SWDAT                                       PA_13
 
