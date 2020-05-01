@@ -232,14 +232,8 @@ void SX1276SetRfTxPower( int8_t power )
 
 static uint8_t SX1276GetPaSelect( int8_t power )
 {
-    if( power > 14 )
-    {
-        return RF_PACONFIG_PASELECT_PABOOST;
-    }
-    else
-    {
-        return RF_PACONFIG_PASELECT_RFO;
-    }
+    // Always use PA_BOOST pin, otherwise range is very limited
+    return RF_PACONFIG_PASELECT_PABOOST;
 }
 
 void SX1276SetAntSwLowPower( bool status )
