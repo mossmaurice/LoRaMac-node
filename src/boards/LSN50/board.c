@@ -19,6 +19,8 @@
  * \author    Miguel Luis ( Semtech )
  *
  * \author    Gregory Cristian ( Semtech )
+ * 
+ * \author    Simon Hoinkis
  */
 #include "stm32l0xx.h"
 #include "utilities.h"

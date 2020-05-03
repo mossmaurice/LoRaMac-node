@@ -13,8 +13,9 @@
 ## embedded.connectivity.solutions.==============
 ##
 ## License:  Revised BSD License, see LICENSE.TXT file included in the project
-## Authors:  Johannes Bruder (STACKFORCE), Miguel Luis (Semtech)
+## Authors:  Johannes Bruder (STACKFORCE), Miguel Luis (Semtech), Simon Hoinkis
 ##
+
 project(LSN50)
 cmake_minimum_required(VERSION 3.6)
 enable_language(ASM)
