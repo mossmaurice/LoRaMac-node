@@ -46,6 +46,10 @@
 /*
  * MCU objects
  */
+Adc_t AdcBattery;
+#ifdef FIELD_SENSOR
+Adc_t AdcWatermark;
+#endif
 Uart_t Uart2;
 
 /*!
@@ -142,6 +146,10 @@ void BoardInitMcu( void )
         SystemClockReConfig( );
     }
 
+    AdcInit(&AdcBattery, NC);
+#ifdef FIELD_SENSOR
+    AdcInit(&AdcWatermark, NC);
+#endif
     SpiInit( &SX1276.Spi, SPI_1, RADIO_MOSI, RADIO_MISO, RADIO_SCLK, NC );
     SX1276IoInit( );
 
@@ -150,9 +158,7 @@ void BoardInitMcu( void )
         McuInitialized = true;
         SX1276IoDbgInit( );
         CalibrateSystemWakeupTime( );
-        /// @todo
-        // AdcMcuConfig();
-        // Enable PWR_OUT_PIN27_5V
+        /// @todo Enable PWR_OUT_PIN27_5V
     }
 }
 
@@ -187,20 +193,54 @@ void BoardGetUniqueId( uint8_t *id )
     id[0] = ( ( *( uint32_t* )ID2 ) );
 }
 
-uint16_t BoardBatteryMeasureVolage( void )
+
+/*!
+ * VREF calibration value (see manual)
+ */
+#define VREFINT_CAL                                 ( *( uint16_t* )0x1FF80078U )
+
+#define BATTERY_MAX_LEVEL                           3000 // mV
+#define BATTERY_MIN_LEVEL                           1800 // mV
+#define FACTORY_POWER_SUPPLY                        BATTERY_MAX_LEVEL
+
+static uint16_t BatteryVoltage = BATTERY_MAX_LEVEL;
+
+uint16_t BoardBatteryMeasureVoltage( void )
 {
-    return 0;
+    uint16_t vdd = 0;
+    uint16_t vref = VREFINT_CAL;
+
+    vref = AdcReadChannel( &AdcBattery, BAT_LEVEL_CHANNEL );
+
+    vdd = ( (float) FACTORY_POWER_SUPPLY * (float) VREFINT_CAL) / (float) vref;
+
+    return vdd;
 }
 
 uint32_t BoardGetBatteryVoltage( void )
 {
-    return 0;
+    return BatteryVoltage;
 }
 
 uint8_t BoardGetBatteryLevel( void )
 {
-    /// @todo implement this with AdcMcuReadChannel() and ADC_CHANNEL_VREFINT
-    return 0;
+    uint8_t batteryLevel = 0;
+
+    BatteryVoltage = BoardBatteryMeasureVoltage( );
+
+    if( BatteryVoltage >= BATTERY_MAX_LEVEL )
+    {
+        batteryLevel = 255;
+    }
+    else if (( BatteryVoltage < BATTERY_MAX_LEVEL ) && ( BatteryVoltage > BATTERY_MIN_LEVEL ))
+    {
+        batteryLevel = ( 254 * ( BatteryVoltage - BATTERY_MIN_LEVEL )) / ( BATTERY_MAX_LEVEL - BATTERY_MIN_LEVEL );
+    }
+    else if ( BatteryVoltage <= BATTERY_MIN_LEVEL )
+    {
+        batteryLevel = 1;
+    }
+    return batteryLevel;
 }
 
 static void BoardUnusedIoInit( void )
