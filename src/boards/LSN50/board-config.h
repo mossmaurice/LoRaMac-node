@@ -66,7 +66,7 @@ extern "C"
 
 #define RADIO_ANT_SWITCH                            PA_8
 
-#define BAT_LEVEL_CHANNEL                           ADC_CHANNEL_17
+#define ADC_CHANNEL_VREFINT                         ADC_CHANNEL_17
 
 #define PWR_OUT_PIN27_5V                            PB_5
 

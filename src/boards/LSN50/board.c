@@ -212,7 +212,7 @@ uint16_t BoardBatteryMeasureVoltage( void )
     uint16_t vdd = 0;
     uint16_t vref = VREFINT_CAL;
 
-    vref = AdcReadChannel( &AdcBattery, BAT_LEVEL_CHANNEL );
+    vref = AdcReadChannel( &AdcBattery, ADC_CHANNEL_VREFINT );
 
     vdd = ( (float) FACTORY_POWER_SUPPLY * (float) VREFINT_CAL) / (float) vref;
 
