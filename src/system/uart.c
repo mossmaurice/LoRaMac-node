@@ -19,6 +19,8 @@
  * \author    Miguel Luis ( Semtech )
  *
  * \author    Gregory Cristian ( Semtech )
+ * 
+ * \author    Simon Hoinkis
  */
 #include "uart-board.h"
 #include "uart.h"
@@ -61,4 +63,26 @@ uint8_t UartPutBuffer( Uart_t *obj, uint8_t *buffer, uint16_t size )
 uint8_t UartGetBuffer( Uart_t *obj, uint8_t *buffer, uint16_t size, uint16_t *nbReadBytes )
 {
     return UartMcuGetBuffer( obj, buffer, size, nbReadBytes );
+}
+
+void UartSingleWireInit( Uart_t *obj, UartId_t uartId, PinNames tx, PinNames rx )
+{
+    if( obj->IsInitialized == false )
+    {
+        obj->IsInitialized = true;
+        UartMcuSingleWireInit( obj, uartId, tx, rx );
+    }
+}
+
+void UartSingleWireConfig( Uart_t *obj, UartMode_t mode, uint32_t baudrate, WordLength_t wordLength, StopBits_t stopBits, Parity_t parity, FlowCtrl_t flowCtrl )
+{
+    if( obj->IsInitialized == true )
+    {
+        UartMcuSingleWireConfig( obj, mode, baudrate, wordLength, stopBits, parity, flowCtrl );
+    }
+}
+
+bool UartSingleWireTxRx(uint8_t* txBit, uint8_t* rxBit, uint8_t length)
+{
+    return UartMcuSingleWireTxRx(txBit, rxBit, length);
 }

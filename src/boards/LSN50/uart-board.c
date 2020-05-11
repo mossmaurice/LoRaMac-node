@@ -19,6 +19,8 @@
  * \author    Miguel Luis ( Semtech )
  *
  * \author    Gregory Cristian ( Semtech )
+ * 
+ * \author    Simon Hoinkis
  */
 #include "stm32l0xx.h"
 #include "utilities.h"
@@ -32,8 +34,11 @@
 #define TX_BUFFER_RETRY_COUNT                       10
 
 static UART_HandleTypeDef UartHandle;
+static UART_HandleTypeDef UartHandleSingleWire;
 uint8_t RxData = 0;
 uint8_t TxData = 0;
+
+
 
 extern Uart_t Uart2;
 
@@ -339,4 +344,169 @@ void HAL_UART_ErrorCallback( UART_HandleTypeDef *handle )
 void USART2_IRQHandler( void )
 {
     HAL_UART_IRQHandler( &UartHandle );
+}
+
+void UartMcuSingleWireInit( Uart_t *obj, UartId_t uartId, PinNames tx, PinNames rx )
+{
+    obj->UartId = uartId;
+
+    if( uartId == UART_USB_CDC )
+    {
+#if defined( USE_USB_CDC )
+        UartUsbInit( obj, uartId, NC, NC );
+#endif
+    }
+    else
+    {
+        __HAL_RCC_USART1_FORCE_RESET( );
+        __HAL_RCC_USART1_RELEASE_RESET( );
+        __HAL_RCC_USART1_CLK_ENABLE( );
+
+        // Set UART1_TX to open-drain
+        GpioInit( &obj->Tx, tx, PIN_ALTERNATE_FCT, PIN_OPEN_DRAIN, PIN_PULL_UP, GPIO_AF4_USART1 );
+        GpioInit( &obj->Rx, rx, PIN_ALTERNATE_FCT, PIN_OPEN_DRAIN, PIN_PULL_UP, GPIO_AF4_USART1 );
+    }
+}
+
+void UartMcuSingleWireConfig( Uart_t *obj, UartMode_t mode, uint32_t baudrate, WordLength_t wordLength, StopBits_t stopBits, Parity_t parity, FlowCtrl_t flowCtrl )
+{
+    HAL_UART_DeInit( &UartHandleSingleWire );
+
+    if( obj->UartId == UART_USB_CDC )
+    {
+#if defined( USE_USB_CDC )
+        UartUsbConfig( obj, mode, baudrate, wordLength, stopBits, parity, flowCtrl );
+#endif
+    }
+    else
+    {
+        UartHandleSingleWire.Instance = USART1;
+        UartHandleSingleWire.Init.BaudRate = baudrate;
+
+        if( mode == TX_ONLY )
+        {
+            if( obj->FifoTx.Data == NULL )
+            {
+                assert_param( FAIL );
+            }
+            UartHandleSingleWire.Init.Mode = UART_MODE_TX;
+        }
+        else if( mode == RX_ONLY )
+        {
+            if( obj->FifoRx.Data == NULL )
+            {
+                assert_param( FAIL );
+            }
+            UartHandleSingleWire.Init.Mode = UART_MODE_RX;
+        }
+        else if( mode == RX_TX )
+        {
+            if( ( obj->FifoTx.Data == NULL ) || ( obj->FifoRx.Data == NULL ) )
+            {
+                assert_param( FAIL );
+            }
+            UartHandleSingleWire.Init.Mode = UART_MODE_TX_RX;
+        }
+        else
+        {
+            assert_param( FAIL );
+        }
+
+        if( wordLength == UART_8_BIT )
+        {
+            UartHandleSingleWire.Init.WordLength = UART_WORDLENGTH_8B;
+        }
+        else if( wordLength == UART_9_BIT )
+        {
+            UartHandleSingleWire.Init.WordLength = UART_WORDLENGTH_9B;
+        }
+
+        switch( stopBits )
+        {
+        case UART_2_STOP_BIT:
+            UartHandleSingleWire.Init.StopBits = UART_STOPBITS_2;
+            break;
+        case UART_1_5_STOP_BIT:
+            UartHandleSingleWire.Init.StopBits = UART_STOPBITS_1_5;
+            break;
+        case UART_1_STOP_BIT:
+        default:
+            UartHandleSingleWire.Init.StopBits = UART_STOPBITS_1;
+            break;
+        }
+
+        if( parity == NO_PARITY )
+        {
+            UartHandleSingleWire.Init.Parity = UART_PARITY_NONE;
+        }
+        else if( parity == EVEN_PARITY )
+        {
+            UartHandleSingleWire.Init.Parity = UART_PARITY_EVEN;
+        }
+        else
+        {
+            UartHandleSingleWire.Init.Parity = UART_PARITY_ODD;
+        }
+
+        if( flowCtrl == NO_FLOW_CTRL )
+        {
+            UartHandleSingleWire.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+        }
+        else if( flowCtrl == RTS_FLOW_CTRL )
+        {
+            UartHandleSingleWire.Init.HwFlowCtl = UART_HWCONTROL_RTS;
+        }
+        else if( flowCtrl == CTS_FLOW_CTRL )
+        {
+            UartHandleSingleWire.Init.HwFlowCtl = UART_HWCONTROL_CTS;
+        }
+        else if( flowCtrl == RTS_CTS_FLOW_CTRL )
+        {
+            UartHandleSingleWire.Init.HwFlowCtl = UART_HWCONTROL_RTS_CTS;
+        }
+
+        UartHandleSingleWire.Init.OverSampling = UART_OVERSAMPLING_16;
+
+        // Set TX to half-duplex single-wire
+        if( HAL_HalfDuplex_Init( &UartHandleSingleWire ) != HAL_OK )
+        {
+            assert_param( FAIL );
+        }
+
+        HAL_NVIC_SetPriority( USART1_IRQn, 3, 0 );
+        HAL_NVIC_EnableIRQ( USART1_IRQn );
+    }
+}
+
+void USART1_IRQHandler( void )
+{
+    HAL_UART_IRQHandler( &UartHandleSingleWire );
+}
+
+bool UartMcuSingleWireTxRx(uint8_t* txBit, uint8_t* rxBit, uint8_t length)
+{
+    uint32_t begin = HAL_GetTick( );
+
+    HAL_StatusTypeDef status;
+
+    status = HAL_UART_Receive_IT( &UartHandleSingleWire, rxBit, length );
+    if ( status != HAL_OK )
+    {
+        return false;
+    }
+
+    status = HAL_UART_Transmit( &UartHandleSingleWire, txBit, length, 100 );
+    if (status != HAL_OK )
+    {
+        return false;
+    }
+
+    while( UartHandleSingleWire.RxState != HAL_UART_STATE_READY )
+    {
+        if( HAL_GetTick() - begin > 100 )
+        {
+            return false;
+        }
+    }
+    return true;
 }

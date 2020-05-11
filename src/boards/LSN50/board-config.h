@@ -66,6 +66,7 @@ extern "C"
 
 #define RADIO_ANT_SWITCH                            PA_8
 
+#define ADC_CHANNEL_PA1                             ADC_CHANNEL_1
 #define ADC_CHANNEL_VREFINT                         ADC_CHANNEL_17
 
 #define PWR_OUT_PIN27_5V                            PB_5
@@ -76,12 +77,11 @@ extern "C"
 #define I2C_SCL                                     PB_6
 #define I2C_SDA                                     PB_7
 
-#define UART_TX                                     PA_2
-#define UART_RX                                     PA_3
+#define UART2_TX                                    PA_2
+#define UART2_RX                                    PA_3
 
-// Debug pins definition.
-//#define RADIO_DBG_PIN_TX                            PB_13
-//#define RADIO_DBG_PIN_RX                            PB_14
+#define UART1_TX                                    PA_9
+#define UART1_RX                                    PA_10
 
 #ifdef __cplusplus
 }

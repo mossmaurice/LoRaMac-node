@@ -19,6 +19,8 @@
  * \author    Miguel Luis ( Semtech )
  *
  * \author    Gregory Cristian ( Semtech )
+ * 
+ * \author    Simon Hoinkis
  */
 #ifndef __UART_BOARD_H__
 #define __UART_BOARD_H__
@@ -54,6 +56,25 @@ void UartMcuInit( Uart_t *obj, UartId_t uartId, PinNames tx, PinNames rx );
  * \param [IN] flowCtrl     UART flow control
  */
 void UartMcuConfig( Uart_t *obj, UartMode_t mode, uint32_t baudrate, WordLength_t wordLength, StopBits_t stopBits, Parity_t parity, FlowCtrl_t flowCtrl );
+
+/*!
+ * \brief Initializes the UART object and MCU peripheral for communication on a single wire bus
+ */
+void UartMcuSingleWireInit( Uart_t *obj, UartId_t uartId, PinNames tx, PinNames rx  );
+
+/*!
+ * \brief Configures the UART object and MCU peripheral for communication on a single wire bus
+ */
+void UartMcuSingleWireConfig( Uart_t *obj, UartMode_t mode, uint32_t baudrate, WordLength_t wordLength, StopBits_t stopBits, Parity_t parity, FlowCtrl_t flowCtrl );
+
+/*!
+ * \brief Sends a bit (represented by 0xFF or 0x00) on a single wire bus and receives the answer
+ *
+ * \param [IN] txBit   Pointer to bit to be transmitted
+ * \param [IN] rxBit   Pointer to bit which will be received
+ * \param [IN] length  Number of bits to send
+ */
+bool UartMcuSingleWireTxRx(uint8_t* txBit, uint8_t* rxBit, uint8_t length);
 
 /*!
  * \brief DeInitializes the UART object and MCU pins

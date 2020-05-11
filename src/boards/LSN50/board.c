@@ -49,9 +49,6 @@
  * MCU objects
  */
 Adc_t AdcBattery;
-#ifdef FIELD_SENSOR
-Adc_t AdcWatermark;
-#endif
 Uart_t Uart2;
 
 /*!
@@ -134,7 +131,7 @@ void BoardInitMcu( void )
         FifoInit( &Uart2.FifoTx, Uart2TxBuffer, UART2_FIFO_TX_SIZE );
         FifoInit( &Uart2.FifoRx, Uart2RxBuffer, UART2_FIFO_RX_SIZE );
         // Configure your terminal for 8 Bits data (7 data bit + 1 parity bit), no parity and no flow ctrl
-        UartInit( &Uart2, UART_2, UART_TX, UART_RX );
+        UartInit( &Uart2, UART_2, UART2_TX, UART2_RX );
         UartConfig( &Uart2, RX_TX, 38400, UART_8_BIT, UART_1_STOP_BIT, NO_PARITY, NO_FLOW_CTRL );
 
         RtcInit( );
@@ -149,9 +146,6 @@ void BoardInitMcu( void )
     }
 
     AdcInit(&AdcBattery, NC);
-#ifdef FIELD_SENSOR
-    AdcInit(&AdcWatermark, NC);
-#endif
     SpiInit( &SX1276.Spi, SPI_1, RADIO_MOSI, RADIO_MISO, RADIO_SCLK, NC );
     SX1276IoInit( );
 
